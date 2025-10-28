@@ -1,707 +1,728 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Delirium Assessment & Structured Workup</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Delirium & AMS Workup Tool</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-            -webkit-font-smoothing: antialiased;
-        }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #f0f4f8;
+  padding: 16px;
+  line-height: 1.6;
+  color: #2d3748;
+}
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-        }
+.container {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
 
-        header {
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            color: white;
-            padding: 24px;
-            text-align: center;
-        }
+.header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 24px;
+  text-align: center;
+}
 
-        h1 {
-            font-size: 26px;
-            font-weight: 600;
-            margin-bottom: 8px;
-        }
+.header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
 
-        .subtitle {
-            font-size: 14px;
-            opacity: 0.9;
-            line-height: 1.5;
-        }
+.header p {
+  font-size: 14px;
+  opacity: 0.95;
+}
 
-        .content {
-            padding: 24px;
-        }
+.content {
+  padding: 20px;
+}
 
-        .section {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-bottom: 20px;
-            border-left: 4px solid #667eea;
-        }
+.section {
+  margin-bottom: 20px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
+.section-header {
+  background: #edf2f7;
+  padding: 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  user-select: none;
+}
 
-        h2 {
-            font-size: 18px;
-            color: #1e3c72;
-            font-weight: 600;
-        }
+.section-header:hover {
+  background: #e2e8f0;
+}
 
-        .help-btn {
-            background: #667eea;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            cursor: pointer;
-            touch-action: manipulation;
-            font-weight: 500;
-        }
+.section-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #2d3748;
+}
 
-        .help-btn:active {
-            transform: scale(0.95);
-        }
+.section-header .toggle {
+  font-size: 20px;
+  font-weight: bold;
+  color: #667eea;
+}
 
-        .help-text {
-            display: none;
-            background: #e3f2fd;
-            border-left: 3px solid #2196f3;
-            padding: 12px;
-            margin-top: 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            line-height: 1.6;
-            color: #1565c0;
-        }
+.section-body {
+  padding: 20px;
+  display: none;
+}
 
-        .help-text.show {
-            display: block;
-        }
+.section-body.active {
+  display: block;
+}
 
-        .score-input {
-            margin: 16px 0;
-        }
+.form-group {
+  margin-bottom: 16px;
+}
 
-        label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 14px;
-        }
+.form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #4a5568;
+  font-size: 14px;
+}
 
-        input[type="number"] {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
+.form-group input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  cursor: pointer;
+}
 
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
+.form-group input[type="number"],
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #cbd5e0;
+  border-radius: 6px;
+  font-size: 16px;
+}
 
-        .checkbox-group {
-            margin: 12px 0;
-        }
+.form-group input[type="number"]:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #667eea;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
 
-        .checkbox-item {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            background: white;
-            border-radius: 8px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            touch-action: manipulation;
-            transition: background 0.2s;
-        }
+.checkbox-list {
+  display: grid;
+  gap: 12px;
+}
 
-        .checkbox-item:active {
-            background: #f0f0f0;
-        }
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #f7fafc;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
 
-        input[type="checkbox"] {
-            width: 24px;
-            height: 24px;
-            margin-right: 12px;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
+.checkbox-item:hover {
+  background: #edf2f7;
+}
 
-        .checkbox-label {
-            font-size: 14px;
-            color: #333;
-            line-height: 1.4;
-            user-select: none;
-        }
+.checkbox-item input {
+  margin: 0;
+  margin-right: 12px;
+}
 
-        .alert-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 16px;
-            border-radius: 8px;
-            margin: 16px 0;
-            display: none;
-        }
+.checkbox-item label {
+  margin: 0;
+  cursor: pointer;
+  font-weight: 500;
+}
 
-        .alert-box.show {
-            display: block;
-        }
+.score-result {
+  background: #edf2f7;
+  border-left: 4px solid #667eea;
+  padding: 16px;
+  margin-top: 16px;
+  border-radius: 4px;
+}
 
-        .alert-box.critical {
-            background: #f8d7da;
-            border-left-color: #dc3545;
-        }
+.score-result.positive {
+  background: #fff5f5;
+  border-left-color: #f56565;
+}
 
-        .alert-title {
-            font-weight: 600;
-            color: #856404;
-            margin-bottom: 8px;
-            font-size: 15px;
-        }
+.score-result h3 {
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #2d3748;
+}
 
-        .alert-box.critical .alert-title {
-            color: #721c24;
-        }
+.score-result p {
+  font-size: 14px;
+  color: #4a5568;
+}
 
-        .alert-list {
-            font-size: 13px;
-            line-height: 1.6;
-            color: #856404;
-        }
+.btn {
+  background: #667eea;
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 12px;
+  margin-top: 12px;
+}
 
-        .alert-box.critical .alert-list {
-            color: #721c24;
-        }
+.btn:hover {
+  background: #5a67d8;
+}
 
-        .summary-section {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border-radius: 12px;
-            padding: 20px;
-            margin: 20px 0;
-        }
+.btn-secondary {
+  background: #718096;
+}
 
-        .summary-section h2 {
-            color: white;
-            margin-bottom: 12px;
-        }
+.btn-secondary:hover {
+  background: #4a5568;
+}
 
-        .summary-content {
-            font-size: 14px;
-            line-height: 1.8;
-        }
+.guidance-box {
+  background: #fffaf0;
+  border: 1px solid #fbd38d;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
 
-        .summary-item {
-            margin: 8px 0;
-            padding-left: 20px;
-            position: relative;
-        }
+.guidance-box h4 {
+  color: #744210;
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
 
-        .summary-item:before {
-            content: "→";
-            position: absolute;
-            left: 0;
-        }
+.guidance-box ul {
+  margin-left: 20px;
+  color: #744210;
+}
 
-        .references {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 20px;
-            margin-top: 20px;
-        }
+.guidance-box ul li {
+  margin-bottom: 6px;
+  font-size: 14px;
+}
 
-        .references h3 {
-            font-size: 16px;
-            color: #1e3c72;
-            margin-bottom: 12px;
-        }
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
 
-        .ref-list {
-            font-size: 12px;
-            line-height: 1.8;
-            color: #666;
-        }
+@media (max-width: 768px) {
+  .grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
 
-        .ref-item {
-            margin: 8px 0;
-            padding-left: 16px;
-            position: relative;
-        }
+.alert {
+  padding: 16px;
+  border-radius: 6px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
 
-        .ref-item:before {
-            content: "•";
-            position: absolute;
-            left: 0;
-            font-weight: bold;
-        }
+.alert-info {
+  background: #ebf8ff;
+  border: 1px solid #90cdf4;
+  color: #2c5282;
+}
 
-        .action-buttons {
-            display: flex;
-            gap: 12px;
-            margin: 24px 0;
-        }
+.alert-warning {
+  background: #fffaf0;
+  border: 1px solid #fbd38d;
+  color: #744210;
+}
 
-        .btn {
-            flex: 1;
-            padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            touch-action: manipulation;
-            transition: transform 0.1s;
-        }
-
-        .btn:active {
-            transform: scale(0.97);
-        }
-
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-
-        .btn-secondary {
-            background: #6c757d;
-            color: white;
-        }
-
-        .toggle-section {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-
-        .collapsible-content.expanded {
-            max-height: 2000px;
-        }
-
-        @media print {
-            body {
-                background: white;
-                padding: 0;
-            }
-            .container {
-                box-shadow: none;
-            }
-            .help-btn, .action-buttons {
-                display: none;
-            }
-        }
-    </style>
+@media print {
+  .btn {
+    display: none;
+  }
+  .section-body {
+    display: block !important;
+  }
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>🧠 Delirium Assessment & Structured Workup</h1>
-            <p class="subtitle">Rapid bedside tool to systematically assess delirium using validated instruments (CAM-ICU, 4AT), guide evidence-based workup for reversible causes, and document safe management decisions including non-pharmacologic interventions and escalation triggers.</p>
-        </header>
 
-        <div class="content">
-            <!-- CAM-ICU Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>CAM-ICU Score</h2>
-                    <button class="help-btn" onclick="toggleHelp('cam-help')">ℹ️ Info</button>
-                </div>
-                <div id="cam-help" class="help-text">
-                    CAM-ICU: positive if acute onset/fluctuation AND inattention AND (altered consciousness OR disorganized thinking). Sensitivity 80%, specificity 96% for delirium detection (Ely et al., Crit Care Med 2001).
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="cam-positive">
-                        <span class="checkbox-label">CAM-ICU Positive (Delirium Present)</span>
-                    </div>
-                </div>
-            </div>
+<div class="container">
+  <div class="header">
+    <h1>🧠 Delirium & AMS Workup Tool</h1>
+    <p>Evidence-based assessment and structured workup for hospitalized patients</p>
+  </div>
 
-            <!-- 4AT Section -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>4AT Score</h2>
-                    <button class="help-btn" onclick="toggleHelp('4at-help')">ℹ️ Info</button>
-                </div>
-                <div id="4at-help" class="help-text">
-                    4AT: score ≥4 suggests delirium (alertness 0–4, AMT4 0–2, attention 0–2, acute change 0–4). Score 1–3 indicates possible cognitive impairment; validated in hospital settings (Bellelli et al., Age Ageing 2014).
-                </div>
-                <div class="score-input">
-                    <label for="4at-score">Enter 4AT Score (0-12):</label>
-                    <input type="number" id="4at-score" min="0" max="12" placeholder="0" onchange="updateSummary()">
-                </div>
-            </div>
-
-            <!-- Metabolic Workup -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Metabolic Labs Ordered</h2>
-                    <button class="help-btn" onclick="toggleHelp('metabolic-help')">ℹ️ Info</button>
-                </div>
-                <div id="metabolic-help" class="help-text">
-                    Obtain CBC, CMP, calcium, magnesium, phosphate, glucose, TSH if unexplained. Consider ammonia, B12/folate, cortisol based on history (NICE Guideline CG103).
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="metabolic-done">
-                        <span class="checkbox-label">CBC, CMP, Ca/Mg/Phos, Glucose ordered</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Infectious Workup -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Infectious Workup Initiated</h2>
-                    <button class="help-btn" onclick="toggleHelp('infectious-help')">ℹ️ Info</button>
-                </div>
-                <div id="infectious-help" class="help-text">
-                    Urinalysis/culture (most common), CXR, blood cultures if febrile. Consider LP if meningitis/encephalitis suspected (fever, nuchal rigidity, focal neuro signs) per IDSA guidelines.
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="ua-culture">
-                        <span class="checkbox-label">Urinalysis/culture ordered</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="cxr">
-                        <span class="checkbox-label">CXR ordered</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="blood-cx">
-                        <span class="checkbox-label">Blood cultures obtained</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Structural/Neuro Workup -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Neuro Imaging/EEG Considered</h2>
-                    <button class="help-btn" onclick="toggleHelp('neuro-help')">ℹ️ Info</button>
-                </div>
-                <div id="neuro-help" class="help-text">
-                    Obtain non-contrast head CT for focal signs, trauma, fall, anticoagulation, or persistent unexplained delirium. EEG if seizure suspected (SCCM/APA Delirium Guidelines).
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="head-ct">
-                        <span class="checkbox-label">Head CT ordered/completed</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="eeg">
-                        <span class="checkbox-label">EEG ordered/completed</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Toxicologic/Medication Review -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Medication Review Completed</h2>
-                    <button class="help-btn" onclick="toggleHelp('tox-help')">ℹ️ Info</button>
-                </div>
-                <div id="tox-help" class="help-text">
-                    Review all meds for anticholinergics (Beers Criteria), benzodiazepines, opioids, polypharmacy. Check drug levels (digoxin, lithium) and urine toxicology if substance use suspected.
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="med-review">
-                        <span class="checkbox-label">Comprehensive medication review completed</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Medications to Hold -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Deliriogenic Meds Held</h2>
-                    <button class="help-btn" onclick="toggleHelp('hold-help')">ℹ️ Info</button>
-                </div>
-                <div id="hold-help" class="help-text">
-                    Discontinue anticholinergics, diphenhydramine, promethazine, unnecessary benzodiazepines/opioids, and other deliriogenic agents per AGS Beers Criteria 2023.
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="meds-held">
-                        <span class="checkbox-label">Deliriogenic medications discontinued</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Non-Pharmacologic Interventions -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Non-Pharm Interventions Implemented</h2>
-                    <button class="help-btn" onclick="toggleHelp('nonpharm-help')">ℹ️ Info</button>
-                </div>
-                <div id="nonpharm-help" class="help-text">
-                    Prioritize non-pharmacologic interventions: reorientation, sleep hygiene, mobilization, minimize restraints. These are first-line per NICE CG103 and SCCM Guidelines.
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="reorientation">
-                        <span class="checkbox-label">Reorientation strategies (clock, calendar, family)</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="sleep">
-                        <span class="checkbox-label">Sleep hygiene (minimize nighttime interruptions)</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="mobilize">
-                        <span class="checkbox-label">Early mobilization initiated</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="glasses">
-                        <span class="checkbox-label">Glasses/hearing aids provided</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Pharmacologic Options -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>Pharmacologic Agent (if indicated)</h2>
-                    <button class="help-btn" onclick="toggleHelp('pharm-help')">ℹ️ Info</button>
-                </div>
-                <div id="pharm-help" class="help-text">
-                    If severe agitation threatens safety: haloperidol 0.5–1 mg IV/PO or quetiapine 12.5–25 mg PO (see local protocol; avoid in QTc >500 ms, Parkinson's). Avoid benzodiazepines except alcohol/sedative withdrawal (NICE CG103, SCCM Guidelines).
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this)">
-                        <input type="checkbox" id="pharm-given">
-                        <span class="checkbox-label">Pharmacologic agent administered (document indication, dose, response)</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Escalation Criteria -->
-            <div class="section">
-                <div class="section-header">
-                    <h2>⚠️ Escalation Criteria</h2>
-                    <button class="help-btn" onclick="toggleHelp('escalation-help')">ℹ️ Info</button>
-                </div>
-                <div id="escalation-help" class="help-text">
-                    Check any criteria that apply. Any checked item should prompt urgent escalation to senior clinician, rapid response, or ICU consultation.
-                </div>
-                <div class="checkbox-group">
-                    <div class="checkbox-item" onclick="toggleCheckbox(this); checkEscalation()">
-                        <input type="checkbox" class="escalation-check" id="esc-agitation">
-                        <span class="checkbox-label">Severe agitation with imminent risk of self-harm or harm to staff</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this); checkEscalation()">
-                        <input type="checkbox" class="escalation-check" id="esc-hemodynamic">
-                        <span class="checkbox-label">Hemodynamic instability: HR >140 with SBP <90, or new arrhythmia</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this); checkEscalation()">
-                        <input type="checkbox" class="escalation-check" id="esc-respiratory">
-                        <span class="checkbox-label">Respiratory compromise: SpO₂ <88% on supplemental O₂</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this); checkEscalation()">
-                        <input type="checkbox" class="escalation-check" id="esc-seizure">
-                        <span class="checkbox-label">Suspected non-convulsive status or repetitive seizure activity</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this); checkEscalation()">
-                        <input type="checkbox" class="escalation-check" id="esc-intervention">
-                        <span class="checkbox-label">Inability to perform urgent/life-saving interventions</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this); checkEscalation()">
-                        <input type="checkbox" class="escalation-check" id="esc-neuro">
-                        <span class="checkbox-label">Acute focal neurologic deficit (stroke/ICH concern)</span>
-                    </div>
-                    <div class="checkbox-item" onclick="toggleCheckbox(this); checkEscalation()">
-                        <input type="checkbox" class="escalation-check" id="esc-hyperthermia">
-                        <span class="checkbox-label">Hyperthermia (T >40°C) with AMS (NMS/serotonin syndrome)</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alert Box for Escalation -->
-            <div id="escalation-alert" class="alert-box critical">
-                <div class="alert-title">⚠️ URGENT ESCALATION REQUIRED</div>
-                <div class="alert-list">One or more critical escalation criteria identified. Consider immediate senior clinician notification, rapid response activation, or ICU consultation.</div>
-            </div>
-
-            <!-- Summary Section -->
-            <div class="summary-section" id="summary">
-                <h2>📋 Assessment Summary</h2>
-                <div class="summary-content" id="summary-content">
-                    <div class="summary-item">Complete the assessment above to generate summary</div>
-                </div>
-            </div>
-
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <button class="btn btn-primary" onclick="window.print()">🖨️ Print Assessment</button>
-                <button class="btn btn-secondary" onclick="resetForm()">🔄 Reset Form</button>
-            </div>
-
-            <!-- References Section -->
-            <div class="references">
-                <h3 class="toggle-section" onclick="toggleReferences()">📚 Evidence-Based References (Click to Expand)</h3>
-                <div id="ref-content" class="collapsible-content">
-                    <div class="ref-list">
-                        <div class="ref-item">Ely EW et al. Evaluation of delirium in critically ill patients: validation of the CAM-ICU. Crit Care Med. 2001;29(7):1370-9. PMID: 11445689</div>
-                        <div class="ref-item">Bellelli G et al. Validation of the 4AT, a new instrument for rapid delirium screening. Age Ageing. 2014;43(4):496-502. PMID: 24590568</div>
-                        <div class="ref-item">NICE Clinical Guideline CG103: Delirium: prevention, diagnosis and management (2019). https://www.nice.org.uk/guidance/cg103</div>
-                        <div class="ref-item">Barr J et al. Clinical Practice Guidelines for Management of Pain, Agitation, and Delirium in Adult ICU Patients. Crit Care Med. 2013;41(1):263-306. PMID: 23269131</div>
-                        <div class="ref-item">American Geriatrics Society Beers Criteria Update Expert Panel. AGS Beers Criteria for Potentially Inappropriate Medication Use in Older Adults. J Am Geriatr Soc. 2023;71(7):2052-81.</div>
-                        <div class="ref-item">Tunkel AR et al. Practice guidelines for bacterial meningitis. Clin Infect Dis. 2004;39(9):1267-84 (IDSA).</div>
-                    </div>
-                </div>
-            </div>
+  <div class="content">
+    
+    <!-- CAM-ICU Calculator -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>📊 CAM-ICU Calculator</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        <div class="alert alert-info">
+          <strong>CAM-ICU Criteria:</strong> ALL of the following must be present: (1) Acute onset/fluctuation, (2) Inattention, AND either (3) Altered LOC OR (4) Disorganized thinking
         </div>
+        
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <input type="checkbox" id="cam1" onchange="calculateCAM()">
+            <label for="cam1">1. Acute onset or fluctuating course</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cam2" onchange="calculateCAM()">
+            <label for="cam2">2. Inattention (difficulty focusing, easily distracted)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cam3" onchange="calculateCAM()">
+            <label for="cam3">3. Altered level of consciousness (not alert)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cam4" onchange="calculateCAM()">
+            <label for="cam4">4. Disorganized thinking (rambling, irrelevant)</label>
+          </div>
+        </div>
+
+        <div id="cam-result" class="score-result" style="display:none;">
+          <h3>Result: <span id="cam-result-text"></span></h3>
+          <p id="cam-result-desc"></p>
+        </div>
+      </div>
     </div>
 
-    <script>
-        function toggleHelp(id) {
-            const helpText = document.getElementById(id);
-            helpText.classList.toggle('show');
-        }
+    <!-- 4AT Calculator -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>📊 4AT Score Calculator</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        <div class="alert alert-info">
+          <strong>4AT Scoring:</strong> Score ≥4 suggests delirium. Score 1-3 suggests cognitive impairment. Score 0 = delirium unlikely.
+        </div>
 
-        function toggleCheckbox(element) {
-            const checkbox = element.querySelector('input[type="checkbox"]');
-            checkbox.checked = !checkbox.checked;
-            updateSummary();
-        }
+        <div class="form-group">
+          <label for="alertness">Alertness (0-4 points)</label>
+          <select id="alertness" onchange="calculate4AT()">
+            <option value="0">Normal (0)</option>
+            <option value="0">Mild sleepiness <10s (0)</option>
+            <option value="4">Clearly abnormal (4)</option>
+          </select>
+        </div>
 
-        function checkEscalation() {
-            const escalationChecks = document.querySelectorAll('.escalation-check');
-            const alertBox = document.getElementById('escalation-alert');
-            let anyChecked = false;
-            
-            escalationChecks.forEach(check => {
-                if (check.checked) anyChecked = true;
-            });
-            
-            if (anyChecked) {
-                alertBox.classList.add('show');
-            } else {
-                alertBox.classList.remove('show');
-            }
-        }
+        <div class="form-group">
+          <label for="amt4">AMT4 - Age, DOB, Place, Current Year (0-2 points)</label>
+          <select id="amt4" onchange="calculate4AT()">
+            <option value="0">All correct (0)</option>
+            <option value="1">1 error (1)</option>
+            <option value="2">2+ errors or untestable (2)</option>
+          </select>
+        </div>
 
-        function updateSummary() {
-            const summaryContent = document.getElementById('summary-content');
-            let summaryText = '';
-            
-            // Check CAM-ICU
-            const camPositive = document.getElementById('cam-positive').checked;
-            if (camPositive) {
-                summaryText += '<div class="summary-item"><strong>Delirium confirmed by CAM-ICU</strong></div>';
-            }
-            
-            // Check 4AT
-            const fourATScore = document.getElementById('4at-score').value;
-            if (fourATScore) {
-                const score = parseInt(fourATScore);
-                if (score >= 4) {
-                    summaryText += '<div class="summary-item"><strong>4AT score ' + score + ': Delirium likely</strong></div>';
-                } else if (score >= 1) {
-                    summaryText += '<div class="summary-item">4AT score ' + score + ': Possible cognitive impairment</div>';
-                } else {
-                    summaryText += '<div class="summary-item">4AT score ' + score + ': Delirium unlikely</div>';
-                }
-            }
-            
-            // Workup completion
-            const metabolicDone = document.getElementById('metabolic-done').checked;
-            const medReview = document.getElementById('med-review').checked;
-            
-            if (metabolicDone || medReview) {
-                summaryText += '<div class="summary-item">Workup initiated for reversible causes</div>';
-            }
-            
-            // Interventions
-            const medsHeld = document.getElementById('meds-held').checked;
-            const reorientation = document.getElementById('reorientation').checked;
-            const sleep = document.getElementById('sleep').checked;
-            const mobilize = document.getElementById('mobilize').checked;
-            
-            if (medsHeld) {
-                summaryText += '<div class="summary-item">Deliriogenic medications discontinued</div>';
-            }
-            
-            if (reorientation || sleep || mobilize) {
-                summaryText += '<div class="summary-item">Non-pharmacologic interventions implemented (first-line)</div>';
-            }
-            
-            const pharmGiven = document.getElementById('pharm-given').checked;
-            if (pharmGiven) {
-                summaryText += '<div class="summary-item">Pharmacologic intervention documented</div>';
-            }
-            
-            // Escalation check
-            checkEscalation();
-            
-            if (summaryText === '') {
-                summaryText = '<div class="summary-item">Complete the assessment above to generate summary</div>';
-            }
-            
-            summaryContent.innerHTML = summaryText;
-        }
+        <div class="form-group">
+          <label for="attention">Attention - Months backwards (0-2 points)</label>
+          <select id="attention" onchange="calculate4AT()">
+            <option value="0">Achieves 7+ months (0)</option>
+            <option value="1">Starts but <7 months (1)</option>
+            <option value="2">Unable to start (2)</option>
+          </select>
+        </div>
 
-        function toggleReferences() {
-            const refContent = document.getElementById('ref-content');
-            refContent.classList.toggle('expanded');
-        }
+        <div class="form-group">
+          <label for="acute">Acute change or fluctuating course (0-4 points)</label>
+          <select id="acute" onchange="calculate4AT()">
+            <option value="0">No (0)</option>
+            <option value="4">Yes (4)</option>
+          </select>
+        </div>
 
-        function resetForm() {
-            if (confirm('Reset all fields? This cannot be undone.')) {
-                document.querySelectorAll('input[type="checkbox"]').forEach(cb => cb.checked = false);
-                document.querySelectorAll('input[type="number"]').forEach(input => input.value = '');
-                document.querySelectorAll('.help-text').forEach(help => help.classList.remove('show'));
-                document.getElementById('escalation-alert').classList.remove('show');
-                updateSummary();
-            }
-        }
+        <div id="4at-result" class="score-result" style="display:none;">
+          <h3>4AT Score: <span id="4at-score-value"></span></h3>
+          <p id="4at-interpretation"></p>
+        </div>
+      </div>
+    </div>
 
-        // Initialize
-        document.addEventListener('DOMContentLoaded', function() {
-            // Add event listeners to all checkboxes
-            document.querySelectorAll('input[type="checkbox"]').forEach(cb => {
-                cb.addEventListener('change', updateSummary);
-            });
-            
-            updateSummary();
-        });
-    </script>
+    <!-- Structured Workup: Metabolic -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>🧪 Metabolic Workup</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <input type="checkbox" id="met1">
+            <label for="met1">CBC with differential</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="met2">
+            <label for="met2">Comprehensive metabolic panel (CMP)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="met3">
+            <label for="met3">Calcium, Magnesium, Phosphate</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="met4">
+            <label for="met4">Glucose / HbA1c</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="met5">
+            <label for="met5">TSH / Free T4</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="met6">
+            <label for="met6">Ammonia (if liver disease suspected)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="met7">
+            <label for="met7">B12 / Folate / Thiamine</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="met8">
+            <label for="met8">Cortisol (if adrenal insufficiency suspected)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Structured Workup: Infectious -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>🦠 Infectious Workup</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <input type="checkbox" id="inf1">
+            <label for="inf1">Urinalysis + Urine Culture</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="inf2">
+            <label for="inf2">Chest X-ray</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="inf3">
+            <label for="inf3">Blood cultures (if febrile)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="inf4">
+            <label for="inf4">Respiratory viral panel / COVID-19</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="inf5">
+            <label for="inf5">Lumbar puncture (if meningitis/encephalitis suspected)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="inf6">
+            <label for="inf6">C. difficile toxin (if diarrhea)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Structured Workup: Structural -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>🧠 Structural / Neurologic Workup</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <input type="checkbox" id="str1">
+            <label for="str1">Non-contrast head CT (acute change, trauma, anticoagulation)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="str2">
+            <label for="str2">MRI brain (if CT non-diagnostic and high suspicion)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="str3">
+            <label for="str3">EEG (if non-convulsive seizure suspected)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="str4">
+            <label for="str4">Neurology consultation</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Structured Workup: Toxicologic -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>💊 Toxicologic / Medication Review</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <input type="checkbox" id="tox1">
+            <label for="tox1">Complete medication reconciliation</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="tox2">
+            <label for="tox2">Identify anticholinergic medications</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="tox3">
+            <label for="tox3">Review benzodiazepines / opioids</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="tox4">
+            <label for="tox4">Drug levels (digoxin, lithium, anticonvulsants)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="tox5">
+            <label for="tox5">Urine drug screen (if substance use suspected)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="tox6">
+            <label for="tox6">Blood alcohol level</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reversible Causes Checklist -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>✅ Treatable Delirium Causes Checklist</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        <div class="alert alert-warning">
+          <strong>Mnemonic: I WATCH DEATH</strong><br>
+          Infection, Withdrawal, Acute metabolic, Trauma, CNS pathology, Hypoxia, Deficiencies, Endocrine, Acute vascular, Toxins/drugs, Heavy metals
+        </div>
+        <div class="checkbox-list">
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause1">
+            <label for="cause1">Infection (UTI, pneumonia, sepsis)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause2">
+            <label for="cause2">Withdrawal (alcohol, benzodiazepines)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause3">
+            <label for="cause3">Metabolic disturbance (Na, glucose, Ca, uremia)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause4">
+            <label for="cause4">Hypoxia / Hypercarbia</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause5">
+            <label for="cause5">Pain (untreated or undertreated)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause6">
+            <label for="cause6">Medications (anticholinergics, benzos, opioids)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause7">
+            <label for="cause7">CNS event (stroke, bleed, seizure)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause8">
+            <label for="cause8">Urinary retention / Fecal impaction</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause9">
+            <label for="cause9">Endocrine (thyroid, adrenal)</label>
+          </div>
+          <div class="checkbox-item">
+            <input type="checkbox" id="cause10">
+            <label for="cause10">Vitamin deficiency (B12, thiamine)</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Medication Management Guidance -->
+    <div class="section">
+      <div class="section-header" onclick="toggleSection(this)">
+        <h2>💊 Medication Management Guidance</h2>
+        <span class="toggle">+</span>
+      </div>
+      <div class="section-body">
+        
+        <div class="guidance-box">
+          <h4>Medications to HOLD (AGS Beers Criteria)</h4>
+          <ul>
+            <li>Anticholinergics: diphenhydramine, hydroxyzine, promethazine, benztropine</li>
+            <li>First-generation antihistamines</li>
+            <li>Tricyclic antidepressants (amitriptyline, nortriptyline)</li>
+            <li>Benzodiazepines (unless for alcohol/benzo withdrawal)</li>
+            <li>Unnecessary sedatives/hypnotics</li>
+            <li>High-dose opioids (reduce if possible)</li>
+            <li>Muscle relaxants (cyclobenzaprine, carisoprodol)</li>
+          </ul>
+        </div>
+
+        <div class="guidance-box">
+          <h4>Non-Pharmacologic Interventions (FIRST LINE)</h4>
+          <ul>
+            <li>Reorientation: clock, calendar, familiar objects</li>
+            <li>Sleep hygiene: reduce nighttime interruptions</li>
+            <li>Early mobilization and physical therapy</li>
+            <li>Ensure glasses and hearing aids available</li>
+            <li>Minimize restraints and tethers</li>
+            <li>Family presence when possible</li>
+            <li>Adequate pain control</li>
+          </ul>
+        </div>
+
+        <div class="guidance-box">
+          <h4>Pharmacologic Options (If Severe Agitation Threatening Safety)</h4>
+          <ul>
+            <li><strong>Haloperidol:</strong> 0.5-1 mg IV/PO q4-6h PRN (avoid if QTc >500ms, Parkinson's)</li>
+            <li><strong>Quetiapine:</strong> 12.5-25 mg PO qHS or BID (preferred in elderly)</li>
+            <li><strong>Risperidone:</strong> 0.25-0.5 mg PO BID</li>
+            <li><strong>AVOID benzodiazepines</strong> except for alcohol/sedative withdrawal</li>
+            <li>Consult pharmacy/local protocol for dosing</li>
+          </ul>
+        </div>
+
+        <div class="alert alert-warning">
+          <strong>⚠️ Black Box Warning:</strong> Antipsychotics increase mortality risk in elderly patients with dementia-related psychosis. Use lowest effective dose for shortest duration. Document informed decision-making.
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div style="text-align: center; margin-top: 24px;">
+      <button class="btn" onclick="window.print()">🖨️ Print Assessment</button>
+      <button class="btn btn-secondary" onclick="resetAll()">🔄 Reset All</button>
+    </div>
+
+    <div style="margin-top: 24px; padding: 16px; background: #f7fafc; border-radius: 6px; font-size: 12px; color: #718096; text-align: center;">
+      <p><strong>References:</strong> CAM-ICU (Ely 2001), 4AT (Bellelli 2014), NICE CG103, AGS Beers Criteria 2023, SCCM/APA Guidelines</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function toggleSection(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.toggle');
+  
+  if (body.classList.contains('active')) {
+    body.classList.remove('active');
+    toggle.textContent = '+';
+  } else {
+    body.classList.add('active');
+    toggle.textContent = '−';
+  }
+}
+
+function calculateCAM() {
+  const cam1 = document.getElementById('cam1').checked;
+  const cam2 = document.getElementById('cam2').checked;
+  const cam3 = document.getElementById('cam3').checked;
+  const cam4 = document.getElementById('cam4').checked;
+  
+  const resultDiv = document.getElementById('cam-result');
+  const resultText = document.getElementById('cam-result-text');
+  const resultDesc = document.getElementById('cam-result-desc');
+  
+  // CAM-ICU positive: 1 AND 2 AND (3 OR 4)
+  const positive = cam1 && cam2 && (cam3 || cam4);
+  
+  resultDiv.style.display = 'block';
+  
+  if (positive) {
+    resultDiv.classList.add('positive');
+    resultText.textContent = 'CAM-ICU POSITIVE';
+    resultDesc.textContent = 'Delirium is present. Initiate workup for reversible causes and implement non-pharmacologic interventions.';
+  } else {
+    resultDiv.classList.remove('positive');
+    resultText.textContent = 'CAM-ICU NEGATIVE';
+    resultDesc.textContent = 'Criteria not met for delirium diagnosis by CAM-ICU. Consider alternative diagnoses if clinical suspicion remains high.';
+  }
+}
+
+function calculate4AT() {
+  const alertness = parseInt(document.getElementById('alertness').value);
+  const amt4 = parseInt(document.getElementById('amt4').value);
+  const attention = parseInt(document.getElementById('attention').value);
+  const acute = parseInt(document.getElementById('acute').value);
+  
+  const total = alertness + amt4 + attention + acute;
+  
+  const resultDiv = document.getElementById('4at-result');
+  const scoreValue = document.getElementById('4at-score-value');
+  const interpretation = document.getElementById('4at-interpretation');
+  
+  resultDiv.style.display = 'block';
+  scoreValue.textContent = total;
+  
+  if (total >= 4) {
+    resultDiv.classList.add('positive');
+    interpretation.textContent = 'Score ≥4: Possible delirium ± cognitive impairment. Clinical assessment and workup indicated.';
+  } else if (total >= 1) {
+    resultDiv.classList.remove('positive');
+    interpretation.textContent = 'Score 1-3: Possible cognitive impairment. Delirium less likely but not excluded. Monitor closely.';
+  } else {
+    resultDiv.classList.remove('positive');
+    interpretation.textContent = 'Score 0: Delirium or severe cognitive impairment unlikely. Consider alternative diagnoses.';
+  }
+}
+
+function resetAll() {
+  if (confirm('Reset all fields? This cannot be undone.')) {
+    const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+    checkboxes.forEach(cb => cb.checked = false);
+    
+    const selects = document.querySelectorAll('select');
+    selects.forEach(sel => sel.selectedIndex = 0);
+    
+    document.getElementById('cam-result').style.display = 'none';
+    document.getElementById('4at-result').style.display = 'none';
+    
+    const sections = document.querySelectorAll('.section-body');
+    sections.forEach(section => section.classList.remove('active'));
+    
+    const toggles = document.querySelectorAll('.toggle');
+    toggles.forEach(toggle => toggle.textContent = '+');
+  }
+}
+</script>
+
 </body>
 </html>
